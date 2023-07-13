@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+heartdisease = pd.read_csv('/content/drive/MyDrive/heart.csv')
+     
+
+ pip install pgmpy
+     
+
+from pgmpy.estimators import MaximumLikelihoodEstimator
+from pgmpy.models import BayesianNetwork
+from pgmpy.inference import VariableElimination
+     
+
+heartdisease = heartdisease.replace('?',np.nan)
+heartdisease.head()
+  heartdisease.dtypes
+model = BayesianNetwork([('age','target'),('sex','target'),('exang','target'),('cp','target'),('target','restecg'),('target','chol')])
+
+     
+
+model.fit(heartdisease,estimator=MaximumLikelihoodEstimator)
+     
+
+print(model.get_cpds('age'))
+     
+
+infer = VariableElimination(model)
+     
+
+q1= infer.query(variables=['target'],evidence={'restecg':1})
+print(q1)
+q2= infer.query(variables=['target'],evidence={'cp':2})
+print(q2)
