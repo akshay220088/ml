@@ -1,0 +1,77 @@
+import pandas as pd
+import math
+class decision:
+    def __init__(self):
+        self.left = None
+        self.right = None
+        self.data = None
+    
+    def ig(self,i,S,df):
+        df1 = df[df[i]=='YES']
+        df2 = df[df[i]=='NO']
+        n1=df1[df1[target]=='YES'].shape[0]
+        n2=df1[df1[target]=='NO'].shape[0]
+        if n1 and n2:
+            s1 = -1*((df1[df1[target]=='YES'].shape[0])/(df1.shape[0]))*math.log2(((df1[df1[target]=='YES'].shape[0])/(df1.shape[0])))-1*((df1[df1[target]=='NO'].shape[0])/(df1.shape[0]))*math.log2(((df1[df1[target]=='NO'].shape[0])/(df1.shape[0])))
+        else:
+            s1=0
+        n1=df2[df2[target]=='YES'].shape[0]
+        n2=df2[df2[target]=='NO'].shape[0]
+        if n1 and n2:
+            s2 = -1*((df2[df2[target]=='YES'].shape[0])/(df2.shape[0]))*math.log2(((df2[df2[target]=='YES'].shape[0])/(df2.shape[0])))-1*((df2[df2[target]=='NO'].shape[0])/(df2.shape[0]))*math.log2(((df2[df2[target]=='NO'].shape[0])/(df2.shape[0])))
+        else:
+            s2=0
+        return S-(df1.shape[0]/df.shape[0])*s1-(df2.shape[0]/df.shape[0])*s2
+   
+    def selectnode(self,df):
+#         print(df)
+        col=list(df.columns)
+        target = col.pop()
+        n1=df[df[target]=='YES'].shape[0]
+        n2=df[df[target]=='NO'].shape[0]
+        if n1 and n2:
+            S = -1*((df[df['Infected']=='YES'].shape[0])/(df.shape[0]))*math.log2(((df[df['Infected']=='YES'].shape[0])/(df.shape[0])))-1*((df[df['Infected']=='NO'].shape[0])/(df.shape[0]))*math.log2(((df[df['Infected']=='NO'].shape[0])/(df.shape[0])))
+            IG=[]
+            for i in col:
+                if i not in visited:
+                    s=self.ig(i,S,df)
+                    IG.append(round(s,2))
+            print(IG)
+            self.data= col[IG.index(max(IG))]
+            print(self.data)
+            visited.append(self.data)
+            n1=df[df[self.data]=='YES'].shape[0]
+            print(n1)
+            if n1 == df.shape[0]:
+                visited.append('Infected')
+                return 'Infected'
+            elif n1:
+                self.left=self.selectnode(df[df[self.data]=='YES'])
+                
+            n2=df[df[self.data]=='NO'].shape[0]
+            print(n2)
+            
+            if n2==df.shape[0]:
+                visited.append('Not infected')
+                return 'Not Infected'
+            elif n2:
+                self.right=self.selectnode(df[df[self.data]=='NO'])
+#             else:
+#                 visited.append('Not Infected')
+#                 return 'Not Infected'
+        elif n2==0:
+            visited.append('Infected')
+            return 'Infected'
+        else:
+            visited.append('Not Infected')
+            return 'Not Infected'
+df = pd.read_csv('sample dataset of COVID-19.csv')
+df.set_index('ID',inplace=True)
+col = list(df.columns)
+target=col.pop()
+# S = -1*((df[df['Infected']=='YES'].shape[0])/(df.shape[0]))*math.log2(((df[df['Infected']=='YES'].shape[0])/(df.shape[0])))-1*((df[df['Infected']=='NO'].shape[0])/(df.shape[0]))*math.log2(((df[df['Infected']=='NO'].shape[0])/(df.shape[0])))
+visited=[]
+root = decision()
+root.selectnode(df)
+
+              visited
